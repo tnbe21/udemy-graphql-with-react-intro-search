@@ -1,19 +1,11 @@
 import React, { Component } from 'react';
 import {
   ApolloProvider,
-  gql,
   useQuery
 } from '@apollo/client';
 import client from './client';
+import { ME } from './graphql';
 
-const ME = gql`
-  query me {
-    user(login: "iteachonudemy") {
-      name
-      avatarUrl
-    }
-  }
-`;
 const Query = () => {
   const { loading, error, data } = useQuery(ME);
   if (loading) {
