@@ -4,25 +4,41 @@ import {
   useQuery
 } from '@apollo/client';
 import client from './client';
-import { ME } from './graphql';
+import { SEARCH_REPOSITORIES } from './graphql';
 
-const Query = () => {
-  const { loading, error, data } = useQuery(ME);
+const VARIABLES = {
+  after: null,
+  before: null,
+  first: 5,
+  last: null,
+  query: 'フロントエンドエンジニア',
+};
+
+const Query = (props) => {
+  const { after, before, first, last, query } = props.state;
+  const { loading, error, data } = useQuery(SEARCH_REPOSITORIES, {
+    variables: { after, before, first, last, query },
+  });
   if (loading) {
     return 'Loading...';
   }
   if (error) {
     return `Error! ${error.message}`;
   }
-  return <div>{data.user.name}</div>
+  console.log({ data });
+  return <div></div>
 };
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = VARIABLES;
+  }
+
   render() {
     return (
       <ApolloProvider client={client}>
-        <div>Hello, GraphQL</div>
-        <Query />
+        <Query state={this.state} />
       </ApolloProvider>
     )
   }
