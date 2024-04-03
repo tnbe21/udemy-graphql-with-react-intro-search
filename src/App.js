@@ -6,7 +6,7 @@ import {
 import client from './client';
 import { SEARCH_REPOSITORIES } from './graphql';
 
-const VARIABLES = {
+const DEFAULT_STATE = {
   after: null,
   before: null,
   first: 5,
@@ -32,15 +32,36 @@ const Query = (props) => {
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = VARIABLES;
+    this.state = DEFAULT_STATE;
+
+    // handleChange/handleSubmitのthisの参照先を、クラスインスタンスに束縛する
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({
+      ...DEFAULT_STATE,
+      query: event.target.value,
+    });
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
   }
 
   render() {
+    const { query } = this.state;
+    console.log({ query });
+
     return (
       <ApolloProvider client={client}>
+        <form onSubmit={this.handleSubmit}>
+          <input value={query} onChange={this.handleChange} />
+        </form>
         <Query state={this.state} />
       </ApolloProvider>
-    )
+    );
   }
 }
 
