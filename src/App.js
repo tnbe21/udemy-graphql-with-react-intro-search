@@ -55,6 +55,11 @@ class App extends Component {
   }
 
   render() {
+    const StarButton = (props) => {
+      const totalCount = props.node.stargazers.totalCount;
+      return <button>{totalCount === 1 ? '1 star' : `${totalCount} stars`}</button>;
+    };
+
     const Query = (props) => {
       const { after, before, first, last, query } = props.state;
       const { loading, error, data } = useQuery(SEARCH_REPOSITORIES, {
@@ -81,6 +86,8 @@ class App extends Component {
                 return (
                   <li key={node.id}>
                     <a href={node.url} rel='noreferrer' target='_blank'>{node.name}</a>
+                    &nbsp;
+                    <StarButton node={node} />
                   </li>
                 )
               })
