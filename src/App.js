@@ -5,7 +5,7 @@ import {
   useMutation,
 } from '@apollo/client';
 import client from './client';
-import { ADD_STAR, SEARCH_REPOSITORIES } from './graphql';
+import { ADD_STAR, REMOVE_STAR, SEARCH_REPOSITORIES } from './graphql';
 
 const PER_PAGE = 5;
 const DEFAULT_STATE = {
@@ -62,7 +62,7 @@ class App extends Component {
       const viewerHasStarred = node.viewerHasStarred;
       const starCount = totalCount === 1 ? '1 star' : `${totalCount} stars`;
 
-      const [addStar, { loading, error }] = useMutation(ADD_STAR);
+      const [addOrRemoveStar, { loading, error }] = useMutation(viewerHasStarred ? REMOVE_STAR : ADD_STAR);
       if (loading) {
         return 'Loading...';
       }
@@ -72,7 +72,7 @@ class App extends Component {
 
       return (
         <button onClick={() => {
-          addStar({
+          addOrRemoveStar({
             variables: {
               input: {
                 starrableId: node.id,
