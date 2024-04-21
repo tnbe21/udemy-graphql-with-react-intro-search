@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import {
   ApolloProvider,
-  useQuery
+  useQuery,
+  useMutation,
 } from '@apollo/client';
 import client from './client';
-import { SEARCH_REPOSITORIES } from './graphql';
+import { ADD_STAR, SEARCH_REPOSITORIES } from './graphql';
 
 const PER_PAGE = 5;
 const DEFAULT_STATE = {
@@ -60,8 +61,25 @@ class App extends Component {
       const totalCount = node.stargazers.totalCount;
       const viewerHasStarred = node.viewerHasStarred;
       const starCount = totalCount === 1 ? '1 star' : `${totalCount} stars`;
+
+      const [addStar, { loading, error }] = useMutation(ADD_STAR);
+      if (loading) {
+        return 'Loading...';
+      }
+      if (error) {
+        return `Error! ${error.message}`;
+      }
+
       return (
-        <button>
+        <button onClick={() => {
+          addStar({
+            variables: {
+              input: {
+                starrableId: node.id,
+              },
+            },
+          });
+        }}>
           {starCount} | {viewerHasStarred ? 'starred' : '-'}
         </button>
       );
@@ -83,6 +101,7 @@ class App extends Component {
       const repositoryCount = search.repositoryCount;
       const repositoryUnit = repositoryCount === 1 ? 'Repository' : 'Repositories';
       const title = `Github Repositories Search Results - ${repositoryCount} ${repositoryUnit}`;
+      console.log(search.edges);
       return (
         <React.Fragment>
           <h2>{title}</h2>
