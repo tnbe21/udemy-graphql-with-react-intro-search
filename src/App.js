@@ -57,12 +57,22 @@ class App extends Component {
 
   render() {
     const StarButton = (props) => {
-      const node = props.node;
+      const { node, after, before, first, last, query } = props;
       const totalCount = node.stargazers.totalCount;
       const viewerHasStarred = node.viewerHasStarred;
       const starCount = totalCount === 1 ? '1 star' : `${totalCount} stars`;
 
-      const [addOrRemoveStar, { loading, error }] = useMutation(viewerHasStarred ? REMOVE_STAR : ADD_STAR);
+      const [addOrRemoveStar, { loading, error }] = useMutation(viewerHasStarred ? REMOVE_STAR : ADD_STAR, {
+        refetchQueries: mutationResult => {
+          console.log({ mutationResult });
+          return [
+            {
+              query: SEARCH_REPOSITORIES,
+              variables: { after, before, first, last, query },
+            },
+          ];
+        },
+      });
       if (loading) {
         return 'Loading...';
       }
@@ -113,7 +123,7 @@ class App extends Component {
                   <li key={node.id}>
                     <a href={node.url} rel='noreferrer' target='_blank'>{node.name}</a>
                     &nbsp;
-                    <StarButton node={node} />
+                    <StarButton {...{ node, after, before, first, last, query }} />
                   </li>
                 )
               })
